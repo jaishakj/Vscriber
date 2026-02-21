@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transcription Suite</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #0f111a; color: #a0aec0; }
+        .panel { background-color: #1a1d27; border: 1px solid #2d3748; border-radius: 0.75rem; }
+        .glow-text { color: #4ade80; text-shadow: 0 0 10px rgba(74, 222, 128, 0.5); }
+        .btn-gradient { background: linear-gradient(90deg, #2dd4bf 0%, #3b82f6 100%); color: white; }
+    </style>
+</head>
+<body class="flex h-screen font-sans">
+
+    <aside class="w-64 border-r border-gray-800 flex flex-col justify-between p-4">
+        <div>
+            <div class="flex items-center space-x-3 mb-10">
+                <div class="w-8 h-8 rounded bg-gradient-to-br from-pink-500 to-orange-400 flex items-center justify-center text-white font-bold">T</div>
+                <h1 class="text-white font-bold text-lg">Transcription<br><span class="text-xs text-teal-400 tracking-widest">SUITE</span></h1>
+            </div>
+            <nav class="space-y-2">
+                <a href="#" class="flex items-center space-x-3 p-2 bg-gray-800 rounded text-white">
+                    <span>🎙️</span><span>Session</span><span class="ml-auto w-2 h-2 rounded-full bg-green-500"></span>
+                </a>
+                <a href="#" class="flex items-center space-x-3 p-2 hover:bg-gray-800 rounded">
+                    <span>📓</span><span>Notebook</span><span class="ml-auto w-2 h-2 rounded-full bg-green-500"></span>
+                </a>
+                <a href="#" class="flex items-center space-x-3 p-2 hover:bg-gray-800 rounded">
+                    <span>🖥️</span><span>Server</span><span class="ml-auto w-2 h-2 rounded-full bg-green-500"></span>
+                </a>
+            </nav>
+        </div>
+        <div class="space-y-2 text-sm">
+            <a href="#" class="flex items-center space-x-3 p-2 hover:bg-gray-800 rounded"><span>ⓘ</span><span>About</span></a>
+            <a href="#" class="flex items-center space-x-3 p-2 hover:bg-gray-800 rounded"><span>⚙️</span><span>Settings</span></a>
+        </div>
+    </aside>
+
+    <main class="flex-1 p-8 overflow-y-auto">
+        <h2 class="text-2xl text-white font-semibold mb-6">Session</h2>
+        
+        <div class="grid grid-cols-2 gap-6">
+            
+            <div class="space-y-6">
+                <div class="panel p-5">
+                    <h3 class="text-xs font-bold text-gray-400 uppercase mb-4">Control Center</h3>
+                    
+                    <div class="bg-gray-900 rounded p-4 mb-4">
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="flex items-center space-x-2 text-white">
+                                <span class="text-purple-500">⚄</span> <span>Inference Server</span>
+                            </div>
+                            <div class="flex items-center space-x-2 text-sm">
+                                <span>Docker Container Running</span>
+                                <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                            </div>
+                        </div>
+                        <div class="flex space-x-2 text-sm">
+                            <button class="px-3 py-1 bg-gray-800 hover:bg-gray-700 rounded">Start Local</button>
+                            <button class="px-3 py-1 bg-gray-800 hover:bg-gray-700 rounded">Start Remote</button>
+                            <button class="px-3 py-1 bg-red-900/50 text-red-400 hover:bg-red-900/80 rounded">Stop</button>
+                            <button class="px-3 py-1 bg-gray-800 hover:bg-gray-700 rounded ml-auto">Reload Models</button>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-900 rounded p-4">
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="flex items-center space-x-2 text-white">
+                                <span class="text-teal-400">⚡</span> <span>Client Link</span>
+                            </div>
+                            <div class="flex items-center space-x-2 text-sm">
+                                <span>Connected to Server</span>
+                                <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                            </div>
+                        </div>
+                        <div class="flex space-x-2 text-sm">
+                            <button class="px-3 py-1 bg-gray-800 hover:bg-gray-700 rounded">Start Local</button>
+                            <button class="px-3 py-1 bg-gray-800 hover:bg-gray-700 rounded">Start Remote</button>
+                            <button class="px-3 py-1 bg-red-900/50 text-red-400 hover:bg-red-900/80 rounded">Stop</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel p-5">
+                    <h3 class="text-xs font-bold text-gray-400 uppercase mb-4">Main Transcription</h3>
+                    <div class="flex space-x-4 mb-4">
+                        <div class="flex-1">
+                            <label class="text-xs text-gray-500 block mb-1">SOURCE LANGUAGE</label>
+                            <select class="w-full bg-gray-900 border border-gray-700 rounded p-2 text-white"><option>Auto Detect</option></select>
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-500 block mb-1">TRANSLATE TO ENGLISH</label>
+                            <div class="w-10 h-5 bg-gray-700 rounded-full mt-2 relative"><div class="w-4 h-4 bg-white rounded-full absolute left-1 top-0.5"></div></div>
+                        </div>
+                    </div>
+                    <button id="recordBtn" class="w-full btn-gradient py-3 rounded-lg font-semibold flex items-center justify-center space-x-2 transition-opacity hover:opacity-90">
+                        <span>🎙️</span> <span>Start Recording</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                <div class="panel p-5 h-48 flex flex-col">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center space-x-2 text-white">
+                            <span class="text-teal-400">∿</span> 
+                            <div>
+                                <span>Audio Visualizer</span><br>
+                                <span class="text-xs text-gray-500">Live — listening</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex-1 border border-gray-800 bg-gray-900 rounded relative overflow-hidden flex items-end p-1 space-x-1">
+                        <div class="w-2 bg-teal-400 h-1/2 rounded-t"></div>
+                        <div class="w-2 bg-teal-400 h-1/4 rounded-t"></div>
+                        <div class="w-2 bg-teal-400 h-1/6 rounded-t"></div>
+                        <div class="w-full h-[1px] bg-teal-900 absolute top-1/2 left-0"></div>
+                    </div>
+                </div>
+
+                <div class="panel p-5 h-96 flex flex-col">
+                    <div class="flex justify-between items-center border-b border-gray-800 pb-4 mb-4">
+                        <div class="flex items-center space-x-4">
+                            <span class="text-xs font-bold glow-text">ACTIVE</span>
+                            <div class="w-10 h-5 bg-teal-500 rounded-full relative"><div class="w-4 h-4 bg-white rounded-full absolute right-1 top-0.5"></div></div>
+                            <select class="bg-gray-900 border border-gray-700 rounded p-1 text-white text-sm"><option>English</option></select>
+                        </div>
+                        <button class="text-sm flex items-center space-x-1 text-gray-400 hover:text-white">
+                            <span>📄</span> <span>Copy</span>
+                        </button>
+                    </div>
+                    <div id="transcription-box" class="flex-1 bg-gray-900 border border-gray-800 rounded p-4 overflow-y-auto font-mono text-sm space-y-2">
+                        </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const ws = new WebSocket("ws://127.0.0.1:8000/ws/audio");
+        const transcriptBox = document.getElementById("transcription-box");
+        const recordBtn = document.getElementById("recordBtn");
+
+        ws.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            const line = document.createElement("div");
+            line.innerHTML = `<span class="text-gray-500 mr-4">${data.timestamp}</span><span class="text-gray-300">${data.text}</span>`;
+            transcriptBox.appendChild(line);
+            transcriptBox.scrollTop = transcriptBox.scrollHeight;
+        };
+
+        let isRecording = false;
+        recordBtn.addEventListener("click", () => {
+            isRecording = !isRecording;
+            if(isRecording) {
+                recordBtn.innerHTML = "<span>🛑</span> <span>Stop Recording</span>";
+                recordBtn.classList.replace("btn-gradient", "bg-red-600");
+                ws.send(JSON.stringify({action: "start_transcription"}));
+            } else {
+                recordBtn.innerHTML = "<span>🎙️</span> <span>Start Recording</span>";
+                recordBtn.classList.replace("bg-red-600", "btn-gradient");
+            }
+        });
+    </script>
+</body>
+</html>
