@@ -1,18 +1,23 @@
+import os
+import json
+import tempfile
+import asyncio
+from datetime import datetime
 from fastapi import FastAPI, WebSocket, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+from faster_whisper import WhisperModel
 import uvicorn
-import asyncio
-import json
 
 app = FastAPI()
 templates = Jinja2Templates(directory=".")
 
-# Mock state for the UI
-server_state = {
-    "inference_status": "Running",
-    "client_link": "Connected"
-}
+# Initialize the Whisper model. 'base' or 'tiny' are best for real-time.
+print("Loading Vscriber AI Model...")
+model_size = "base"
+# Run on CPU with int8 for compatibility, change device="cuda" if you have an Nvidia GPU
+model = WhisperModel(model_size, device="cpu", compute_type="int8")
+print("Model loaded successfully!")
 
 @app.get("/", response_class=HTMLResponse)
 async def get_ui(request: Request):
@@ -23,29 +28,37 @@ async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
     try:
         while True:
-            # Receive audio data from the browser (mocked here as text commands for setup)
-            data = await websocket.receive_text()
-            message = json.loads(data)
+            # Receive audio blob from the browser
+            audio_bytes = await websocket.receive_bytes()
             
-            if message.get("action") == "start_transcription":
-                # In a real app, you would stream audio bytes here and pass them to faster-whisper
-                await websocket.send_text(json.dumps({
-                    "timestamp": "15:36:03",
-                    "text": "A fully local and private."
-                }))
-                await asyncio.sleep(2)
-                await websocket.send_text(json.dumps({
-                    "timestamp": "15:36:07",
-                    "text": "Speech-to-text app for Linux, Windows and Mac OS."
-                }))
-                await asyncio.sleep(2)
-                await websocket.send_text(json.dumps({
-                    "timestamp": "15:36:13",
-                    "text": "It has a Python backend plus a web frontend."
-                }))
+            # Save the chunk to a temporary file for processing
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".webm") as tmp_file:
+                tmp_file.write(audio_bytes)
+                tmp_file_path = tmp_file.name
+
+            try:
+                # Transcribe the audio chunk
+                segments, info = model.transcribe(tmp_file_path, beam_size=5)
                 
+                transcription = ""
+                for segment in segments:
+                    transcription += segment.text + " "
+
+                if transcription.strip():
+                    # Send back the transcription with a timestamp
+                    current_time = datetime.now().strftime("%H:%M:%S")
+                    response = {
+                        "timestamp": current_time,
+                        "text": transcription.strip()
+                    }
+                    await websocket.send_text(json.dumps(response))
+            finally:
+                # Clean up the temp file
+                if os.path.exists(tmp_file_path):
+                    os.remove(tmp_file_path)
+
     except Exception as e:
-        print(f"Connection closed: {e}")
+        print(f"WebSocket connection closed or error: {e}")
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)
