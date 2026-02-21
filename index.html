@@ -3,166 +3,279 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transcription Suite</title>
+    <title>Vscriber - Real-Time Transcription</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #0f111a; color: #a0aec0; }
-        .panel { background-color: #1a1d27; border: 1px solid #2d3748; border-radius: 0.75rem; }
-        .glow-text { color: #4ade80; text-shadow: 0 0 10px rgba(74, 222, 128, 0.5); }
-        .btn-gradient { background: linear-gradient(90deg, #2dd4bf 0%, #3b82f6 100%); color: white; }
+        /* Smooth scrolling and glassy variables */
+        html { scroll-behavior: smooth; }
+        body { 
+            background: radial-gradient(circle at 15% 50%, #17102e, #0a0b10, #050508);
+            color: #e2e8f0; 
+            font-family: system-ui, -apple-system, sans-serif;
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        /* Glassmorphism Panel */
+        .glass-panel { 
+            background: rgba(26, 29, 41, 0.4); 
+            backdrop-filter: blur(16px); 
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+            border-radius: 1rem; 
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .glow-text { color: #4ade80; text-shadow: 0 0 12px rgba(74, 222, 128, 0.6); }
+        .btn-gradient { background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%); color: white; transition: all 0.3s ease; }
+        .btn-gradient:hover { box-shadow: 0 0 15px rgba(99, 102, 241, 0.5); transform: translateY(-1px); }
+        .btn-stop { background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); color: white; transition: all 0.3s ease; }
+        .btn-stop:hover { box-shadow: 0 0 15px rgba(239, 68, 68, 0.5); transform: translateY(-1px); }
+
+        /* Custom Smooth Scrollbar */
+        ::-webkit-scrollbar { w-width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
+
+        /* Audio Wave Animation */
+        @keyframes pulse-wave {
+            0% { height: 10%; }
+            50% { height: 100%; }
+            100% { height: 10%; }
+        }
+        .wave-bar { animation: pulse-wave 1.5s infinite ease-in-out; transform-origin: bottom; }
+        .wave-bar:nth-child(2) { animation-delay: 0.2s; }
+        .wave-bar:nth-child(3) { animation-delay: 0.4s; }
+        .wave-bar:nth-child(4) { animation-delay: 0.1s; }
+        .wave-bar:nth-child(5) { animation-delay: 0.5s; }
     </style>
 </head>
-<body class="flex h-screen font-sans">
+<body class="flex">
 
-    <aside class="w-64 border-r border-gray-800 flex flex-col justify-between p-4">
+    <aside class="w-64 border-r border-white/10 flex flex-col justify-between p-6 bg-black/20 backdrop-blur-md z-10">
         <div>
-            <div class="flex items-center space-x-3 mb-10">
-                <div class="w-8 h-8 rounded bg-gradient-to-br from-pink-500 to-orange-400 flex items-center justify-center text-white font-bold">T</div>
-                <h1 class="text-white font-bold text-lg">Transcription<br><span class="text-xs text-teal-400 tracking-widest">SUITE</span></h1>
+            <div class="flex items-center space-x-3 mb-12">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-purple-500/30">V</div>
+                <h1 class="text-white font-bold text-xl tracking-wide">Vscriber<br><span class="text-[10px] text-indigo-400 tracking-[0.2em] uppercase">Pro Studio</span></h1>
             </div>
-            <nav class="space-y-2">
-                <a href="#" class="flex items-center space-x-3 p-2 bg-gray-800 rounded text-white">
-                    <span>🎙️</span><span>Session</span><span class="ml-auto w-2 h-2 rounded-full bg-green-500"></span>
+            <nav class="space-y-3">
+                <a href="#" class="flex items-center space-x-3 p-3 bg-white/10 border border-white/5 rounded-lg text-white transition-colors">
+                    <span class="text-indigo-400">🎙️</span><span class="font-medium">Session</span><span class="ml-auto w-2 h-2 rounded-full bg-green-400 shadow-[0_0_8px_#4ade80]"></span>
                 </a>
-                <a href="#" class="flex items-center space-x-3 p-2 hover:bg-gray-800 rounded">
-                    <span>📓</span><span>Notebook</span><span class="ml-auto w-2 h-2 rounded-full bg-green-500"></span>
+                <a href="#" class="flex items-center space-x-3 p-3 hover:bg-white/5 rounded-lg transition-colors text-gray-400 hover:text-white">
+                    <span>📓</span><span>Notebook</span>
                 </a>
-                <a href="#" class="flex items-center space-x-3 p-2 hover:bg-gray-800 rounded">
-                    <span>🖥️</span><span>Server</span><span class="ml-auto w-2 h-2 rounded-full bg-green-500"></span>
+                <a href="#" class="flex items-center space-x-3 p-3 hover:bg-white/5 rounded-lg transition-colors text-gray-400 hover:text-white">
+                    <span>🖥️</span><span>Server</span>
                 </a>
             </nav>
         </div>
-        <div class="space-y-2 text-sm">
-            <a href="#" class="flex items-center space-x-3 p-2 hover:bg-gray-800 rounded"><span>ⓘ</span><span>About</span></a>
-            <a href="#" class="flex items-center space-x-3 p-2 hover:bg-gray-800 rounded"><span>⚙️</span><span>Settings</span></a>
+        <div class="space-y-2 text-sm text-gray-400">
+            <a href="#" class="flex items-center space-x-3 p-3 hover:bg-white/5 rounded-lg transition-colors"><span>ⓘ</span><span>About</span></a>
+            <a href="#" class="flex items-center space-x-3 p-3 hover:bg-white/5 rounded-lg transition-colors"><span>⚙️</span><span>Settings</span></a>
         </div>
     </aside>
 
-    <main class="flex-1 p-8 overflow-y-auto">
-        <h2 class="text-2xl text-white font-semibold mb-6">Session</h2>
-        
-        <div class="grid grid-cols-2 gap-6">
-            
-            <div class="space-y-6">
-                <div class="panel p-5">
-                    <h3 class="text-xs font-bold text-gray-400 uppercase mb-4">Control Center</h3>
-                    
-                    <div class="bg-gray-900 rounded p-4 mb-4">
-                        <div class="flex justify-between items-center mb-4">
-                            <div class="flex items-center space-x-2 text-white">
-                                <span class="text-purple-500">⚄</span> <span>Inference Server</span>
-                            </div>
-                            <div class="flex items-center space-x-2 text-sm">
-                                <span>Docker Container Running</span>
-                                <span class="w-2 h-2 rounded-full bg-green-500"></span>
-                            </div>
-                        </div>
-                        <div class="flex space-x-2 text-sm">
-                            <button class="px-3 py-1 bg-gray-800 hover:bg-gray-700 rounded">Start Local</button>
-                            <button class="px-3 py-1 bg-gray-800 hover:bg-gray-700 rounded">Start Remote</button>
-                            <button class="px-3 py-1 bg-red-900/50 text-red-400 hover:bg-red-900/80 rounded">Stop</button>
-                            <button class="px-3 py-1 bg-gray-800 hover:bg-gray-700 rounded ml-auto">Reload Models</button>
-                        </div>
-                    </div>
+    <main class="flex-1 p-8 overflow-y-auto relative z-0">
+        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-600/20 blur-[120px] rounded-full pointer-events-none"></div>
 
-                    <div class="bg-gray-900 rounded p-4">
-                        <div class="flex justify-between items-center mb-4">
-                            <div class="flex items-center space-x-2 text-white">
-                                <span class="text-teal-400">⚡</span> <span>Client Link</span>
+        <h2 class="text-3xl text-white font-semibold mb-8 tracking-tight">Session</h2>
+        
+        <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+            
+            <div class="space-y-8">
+                <div class="glass-panel p-6">
+                    <h3 class="text-xs font-bold text-gray-400 tracking-wider uppercase mb-5">Control Center</h3>
+                    
+                    <div class="bg-black/40 border border-white/5 rounded-xl p-5 mb-5">
+                        <div class="flex justify-between items-center mb-5">
+                            <div class="flex items-center space-x-3 text-white font-medium">
+                                <span class="text-indigo-400 text-xl">⚄</span> <span>Inference Server</span>
                             </div>
-                            <div class="flex items-center space-x-2 text-sm">
-                                <span>Connected to Server</span>
-                                <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                            <div class="flex items-center space-x-2 text-sm text-gray-400">
+                                <span>Local Model Loaded</span>
+                                <span class="w-2 h-2 rounded-full bg-green-400 shadow-[0_0_8px_#4ade80]"></span>
                             </div>
                         </div>
-                        <div class="flex space-x-2 text-sm">
-                            <button class="px-3 py-1 bg-gray-800 hover:bg-gray-700 rounded">Start Local</button>
-                            <button class="px-3 py-1 bg-gray-800 hover:bg-gray-700 rounded">Start Remote</button>
-                            <button class="px-3 py-1 bg-red-900/50 text-red-400 hover:bg-red-900/80 rounded">Stop</button>
+                        <div class="flex space-x-3 text-sm">
+                            <button class="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg transition-colors">Start Local</button>
+                            <button class="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg transition-colors">Start Remote</button>
+                            <button class="px-4 py-2 bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 rounded-lg transition-colors ml-auto">Reload Model</button>
                         </div>
                     </div>
                 </div>
 
-                <div class="panel p-5">
-                    <h3 class="text-xs font-bold text-gray-400 uppercase mb-4">Main Transcription</h3>
-                    <div class="flex space-x-4 mb-4">
+                <div class="glass-panel p-6">
+                    <h3 class="text-xs font-bold text-gray-400 tracking-wider uppercase mb-5">Main Transcription</h3>
+                    <div class="flex space-x-6 mb-6">
                         <div class="flex-1">
-                            <label class="text-xs text-gray-500 block mb-1">SOURCE LANGUAGE</label>
-                            <select class="w-full bg-gray-900 border border-gray-700 rounded p-2 text-white"><option>Auto Detect</option></select>
+                            <label class="text-xs text-gray-400 block mb-2 font-medium tracking-wide">SOURCE LANGUAGE</label>
+                            <select class="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-white outline-none focus:border-indigo-500 transition-colors">
+                                <option>Auto Detect</option>
+                                <option>English</option>
+                            </select>
                         </div>
                         <div>
-                            <label class="text-xs text-gray-500 block mb-1">TRANSLATE TO ENGLISH</label>
-                            <div class="w-10 h-5 bg-gray-700 rounded-full mt-2 relative"><div class="w-4 h-4 bg-white rounded-full absolute left-1 top-0.5"></div></div>
+                            <label class="text-xs text-gray-400 block mb-2 font-medium tracking-wide">TRANSLATE TO ENGLISH</label>
+                            <div class="w-12 h-6 bg-white/10 rounded-full mt-2 relative cursor-pointer border border-white/5">
+                                <div class="w-5 h-5 bg-gray-400 rounded-full absolute left-0.5 top-0.5 transition-transform"></div>
+                            </div>
                         </div>
                     </div>
-                    <button id="recordBtn" class="w-full btn-gradient py-3 rounded-lg font-semibold flex items-center justify-center space-x-2 transition-opacity hover:opacity-90">
-                        <span>🎙️</span> <span>Start Recording</span>
+                    <button id="recordBtn" class="w-full btn-gradient py-4 rounded-xl font-bold text-lg flex items-center justify-center space-x-3 shadow-lg shadow-indigo-500/20">
+                        <span class="text-xl">🎙️</span> <span>Start Recording</span>
                     </button>
                 </div>
             </div>
 
-            <div class="space-y-6">
-                <div class="panel p-5 h-48 flex flex-col">
+            <div class="space-y-8 flex flex-col">
+                <div class="glass-panel p-6 h-48 flex flex-col">
                     <div class="flex justify-between items-center mb-4">
-                        <div class="flex items-center space-x-2 text-white">
-                            <span class="text-teal-400">∿</span> 
+                        <div class="flex items-center space-x-3 text-white">
+                            <span class="text-indigo-400 text-xl">∿</span> 
                             <div>
-                                <span>Audio Visualizer</span><br>
-                                <span class="text-xs text-gray-500">Live — listening</span>
+                                <span class="font-medium">Audio Visualizer</span><br>
+                                <span class="text-xs text-gray-400" id="visualizer-status">Waiting for input...</span>
                             </div>
                         </div>
                     </div>
-                    <div class="flex-1 border border-gray-800 bg-gray-900 rounded relative overflow-hidden flex items-end p-1 space-x-1">
-                        <div class="w-2 bg-teal-400 h-1/2 rounded-t"></div>
-                        <div class="w-2 bg-teal-400 h-1/4 rounded-t"></div>
-                        <div class="w-2 bg-teal-400 h-1/6 rounded-t"></div>
-                        <div class="w-full h-[1px] bg-teal-900 absolute top-1/2 left-0"></div>
+                    <div class="flex-1 bg-black/40 border border-white/5 rounded-lg relative overflow-hidden flex items-end p-2 space-x-1 justify-center" id="visualizer-bars">
+                        <div class="w-full h-[1px] bg-indigo-500/50 absolute top-1/2 left-0 shadow-[0_0_10px_#6366f1]"></div>
                     </div>
                 </div>
 
-                <div class="panel p-5 h-96 flex flex-col">
-                    <div class="flex justify-between items-center border-b border-gray-800 pb-4 mb-4">
+                <div class="glass-panel p-6 flex-1 flex flex-col min-h-[400px]">
+                    <div class="flex justify-between items-center border-b border-white/10 pb-5 mb-5">
                         <div class="flex items-center space-x-4">
-                            <span class="text-xs font-bold glow-text">ACTIVE</span>
-                            <div class="w-10 h-5 bg-teal-500 rounded-full relative"><div class="w-4 h-4 bg-white rounded-full absolute right-1 top-0.5"></div></div>
-                            <select class="bg-gray-900 border border-gray-700 rounded p-1 text-white text-sm"><option>English</option></select>
+                            <span class="text-xs font-bold glow-text tracking-widest" id="status-text">STANDBY</span>
+                            <div class="w-12 h-6 bg-indigo-500 rounded-full relative shadow-[0_0_10px_rgba(99,102,241,0.4)] border border-white/10">
+                                <div class="w-5 h-5 bg-white rounded-full absolute right-0.5 top-0.5"></div>
+                            </div>
                         </div>
-                        <button class="text-sm flex items-center space-x-1 text-gray-400 hover:text-white">
-                            <span>📄</span> <span>Copy</span>
+                        <button class="text-sm flex items-center space-x-2 text-gray-400 hover:text-white transition-colors bg-white/5 px-3 py-1.5 rounded-lg border border-white/5">
+                            <span>📄</span> <span>Copy All</span>
                         </button>
                     </div>
-                    <div id="transcription-box" class="flex-1 bg-gray-900 border border-gray-800 rounded p-4 overflow-y-auto font-mono text-sm space-y-2">
-                        </div>
+                    
+                    <div id="transcription-box" class="flex-1 overflow-y-auto font-mono text-[15px] space-y-3 pr-2 leading-relaxed">
+                        <div class="text-gray-500 italic text-center mt-10">Waiting for voice input...</div>
+                    </div>
                 </div>
             </div>
         </div>
     </main>
 
     <script>
-        const ws = new WebSocket("ws://127.0.0.1:8000/ws/audio");
+        let ws;
+        let mediaRecorder;
+        let audioChunks = [];
+        let isRecording = false;
+
         const transcriptBox = document.getElementById("transcription-box");
         const recordBtn = document.getElementById("recordBtn");
+        const statusText = document.getElementById("status-text");
+        const visualizerStatus = document.getElementById("visualizer-status");
+        const visualizerBars = document.getElementById("visualizer-bars");
 
-        ws.onmessage = function(event) {
-            const data = JSON.parse(event.data);
-            const line = document.createElement("div");
-            line.innerHTML = `<span class="text-gray-500 mr-4">${data.timestamp}</span><span class="text-gray-300">${data.text}</span>`;
-            transcriptBox.appendChild(line);
-            transcriptBox.scrollTop = transcriptBox.scrollHeight;
-        };
+        function connectWebSocket() {
+            ws = new WebSocket("ws://127.0.0.1:8000/ws/audio");
+            ws.onopen = () => console.log("Connected to Vscriber backend.");
+            
+            ws.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                
+                // Remove placeholder text if it's the first message
+                if(transcriptBox.innerHTML.includes("Waiting for voice input")) {
+                    transcriptBox.innerHTML = '';
+                }
 
-        let isRecording = false;
-        recordBtn.addEventListener("click", () => {
-            isRecording = !isRecording;
-            if(isRecording) {
-                recordBtn.innerHTML = "<span>🛑</span> <span>Stop Recording</span>";
-                recordBtn.classList.replace("btn-gradient", "bg-red-600");
-                ws.send(JSON.stringify({action: "start_transcription"}));
+                const line = document.createElement("div");
+                line.className = "p-3 bg-white/5 rounded-lg border border-white/5 backdrop-blur-sm animate-[fadeIn_0.3s_ease-out]";
+                line.innerHTML = `<span class="text-indigo-400/70 mr-4 text-xs select-none">${data.timestamp}</span><span class="text-gray-100">${data.text}</span>`;
+                
+                transcriptBox.appendChild(line);
+                
+                // Smooth auto-scroll to bottom
+                transcriptBox.scrollTo({ top: transcriptBox.scrollHeight, behavior: 'smooth' });
+            };
+
+            ws.onclose = () => {
+                console.log("Disconnected. Reconnecting...");
+                setTimeout(connectWebSocket, 2000);
+            };
+        }
+
+        function toggleVisualizer(active) {
+            visualizerBars.innerHTML = '<div class="w-full h-[1px] bg-indigo-500/50 absolute top-1/2 left-0 shadow-[0_0_10px_#6366f1]"></div>';
+            if(active) {
+                visualizerStatus.innerText = "Live — listening";
+                visualizerStatus.classList.add("text-indigo-400");
+                for(let i=0; i<30; i++) {
+                    let bar = document.createElement('div');
+                    bar.className = 'w-1.5 bg-indigo-400 rounded-t wave-bar opacity-80';
+                    bar.style.height = Math.random() * 80 + 10 + '%';
+                    bar.style.animationDelay = (Math.random() * 0.5) + 's';
+                    visualizerBars.appendChild(bar);
+                }
             } else {
-                recordBtn.innerHTML = "<span>🎙️</span> <span>Start Recording</span>";
-                recordBtn.classList.replace("bg-red-600", "btn-gradient");
+                visualizerStatus.innerText = "Waiting for input...";
+                visualizerStatus.classList.remove("text-indigo-400");
             }
+        }
+
+        async function startRecording() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+                
+                mediaRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0 && ws.readyState === WebSocket.OPEN) {
+                        // Send audio chunk to backend
+                        ws.send(event.data);
+                    }
+                };
+
+                // Capture and send chunks every 3 seconds
+                mediaRecorder.start(3000); 
+                
+                isRecording = true;
+                recordBtn.innerHTML = "<span class='text-xl'>🛑</span> <span>Stop Recording</span>";
+                recordBtn.classList.replace("btn-gradient", "btn-stop");
+                statusText.innerText = "ACTIVE";
+                toggleVisualizer(true);
+
+            } catch (err) {
+                console.error("Microphone access denied:", err);
+                alert("Please allow microphone access to use Vscriber.");
+            }
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state !== "inactive") {
+                mediaRecorder.stop();
+                mediaRecorder.stream.getTracks().forEach(track => track.stop());
+            }
+            isRecording = false;
+            recordBtn.innerHTML = "<span class='text-xl'>🎙️</span> <span>Start Recording</span>";
+            recordBtn.classList.replace("btn-stop", "btn-gradient");
+            statusText.innerText = "STANDBY";
+            toggleVisualizer(false);
+        }
+
+        recordBtn.addEventListener("click", () => {
+            if(isRecording) { stopRecording(); } 
+            else { startRecording(); }
         });
+
+        // Add keyframes for text fade in
+        const style = document.createElement('style');
+        style.innerHTML = `@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }`;
+        document.head.appendChild(style);
+
+        // Initialize WebSockets on load
+        connectWebSocket();
     </script>
 </body>
 </html>
